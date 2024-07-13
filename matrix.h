@@ -5,7 +5,7 @@
 #include <CL/cl.h>
 #endif
 
-typedef struct
+typedef struct _Matrix
 {
     float *data;
     unsigned int shape[2];

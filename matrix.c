@@ -31,16 +31,11 @@ cl_int LoadMatrix(const char *path, Matrix *matrix)
     if (!matrix->data) // Error mallocing matrix data
         return CL_OUT_OF_HOST_MEMORY;
 
-    char *temp_row[10000]; // Don't make this fixed
-    char *end_ptr;
+    int n = 0;
+    while (fscanf(data_file, "%f", &(matrix->data[n++])) != EOF)
+        ;
 
-    while (fgets(temp_row, 10000, data_file) != NULL)
-    {
-        for (unsigned int count = rows; count > 0; count--)
-        {
-            strtof(temp_row, &end_ptr);
-        }
-    }
+    fclose(data_file);
 
     return CL_SUCCESS;
 }
