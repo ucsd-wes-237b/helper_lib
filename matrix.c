@@ -38,7 +38,7 @@ cl_int LoadMatrix(const char *path, Matrix *matrix)
     {
         for (unsigned int count = rows; count > 0; count--)
         {
-            strtof(temp_row, &end_ptr)
+            strtof(temp_row, &end_ptr);
         }
     }
 
