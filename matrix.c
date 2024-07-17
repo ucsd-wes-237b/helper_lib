@@ -6,19 +6,16 @@
 cl_int LoadMatrix(const char *path, Matrix *matrix)
 {
     FILE *data_file;
-    char dims[100];
 
     data_file = fopen(path, "r");
     if (!data_file) // Error opening file
         return CL_INVALID_VALUE;
-    // Read dimensions
-    if (!fgets(dims, 10, data_file)) // Error reading dimensions
-        return CL_INVALID_VALUE;
 
-    unsigned int rows;
-    unsigned int cols;
-    if (sscanf(dims, "# (%u, %u)", &rows, &cols) == EOF)
+    unsigned int rows = 0;
+    unsigned int cols = 0;
+    if (fscanf(data_file, "# (%u, %u)\n", &rows, &cols) == EOF)
         return CL_INVALID_VALUE; // Error parsing dimensions
+
     if (rows == 0)
         rows = 1;
     if (cols == 0)
