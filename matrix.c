@@ -36,3 +36,26 @@ cl_int LoadMatrix(const char *path, Matrix *matrix)
 
     return CL_SUCCESS;
 }
+
+cl_int SaveMatrix(const char *path, Matrix *matrix)
+{
+    FILE *data_file;
+
+    data_file = fopen(path, "w");
+    if (!data_file) // Error opening file
+        return CL_INVALID_VALUE;
+
+    unsigned int rows = matrix->shape[0];
+    unsigned int cols = matrix->shape[1];
+    if (fprintf(data_file, "# (%u, %u)\n", rows, cols) < 0)
+        return CL_INVALID_VALUE; // Error parsing dimensions
+    
+    for (int i = 0; i < rows * cols; i++) {
+        if (fprintf(data_file, "%f ", matrix->data[i]) < -1)
+            return CL_INVALID_VALUE; // Error parsing dimensions
+    }
+
+    fclose(data_file);
+
+    return CL_SUCCESS;
+}
