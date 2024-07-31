@@ -50,12 +50,35 @@ cl_int SaveMatrix(const char *path, Matrix *matrix)
     if (fprintf(data_file, "# (%u, %u)\n", rows, cols) < 0)
         return CL_INVALID_VALUE; // Error parsing dimensions
     
-    for (int i = 0; i < rows * cols; i++) {
+    for (int i = 0; i < rows * cols; i++)
+    {
         if (fprintf(data_file, "%f ", matrix->data[i]) < -1)
             return CL_INVALID_VALUE; // Error parsing dimensions
     }
 
     fclose(data_file);
 
+    return CL_SUCCESS;
+}
+
+cl_int CheckMatrix(Matrix *truth, Matrix *student)
+{
+    if (truth->shape[0] != student->shape[0] || truth->shape[1] != student->shape[1])
+    {
+        printf("!!SOLUTION IS NOT CORRECT!!\n");
+        return CL_INVALID_VALUE;
+    }
+
+    int count = truth->shape[0] * truth->shape[1];
+    for (int i = 0; i < count; i++)
+    {
+        if (truth->data[i] != student->data[i])
+        {
+            printf("!!SOLUTION IS NOT CORRECT!!\n");
+            return CL_INVALID_VALUE;
+        }
+    }
+
+    printf("!!SOLUTION IS CORRECT!!\n");
     return CL_SUCCESS;
 }
