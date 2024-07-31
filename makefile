@@ -1,5 +1,5 @@
 CC       = gcc
-CFLAGS   = -g -Wall -lm
+CFLAGS   = -g -Wall
 INCFLAGS :=
 
 ifeq ($(shell uname -o), Darwin)
@@ -10,6 +10,7 @@ else ifeq ($(shell uname -o), GNU/Linux) # Assumes NVIDIA GPU
 else # Android
 	LDFLAGS = -lOpenCL
 endif
+LDFLAGS += -lm
 
 SOURCES := device.c kernel.c matrix.c
 OBJECTS = $(SOURCES:.c=.o)
