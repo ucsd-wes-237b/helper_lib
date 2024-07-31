@@ -1,5 +1,5 @@
 CC       = gcc
-CFLAGS   = -g -Wall
+CFLAGS   = -g -Wall -lm
 INCFLAGS :=
 
 ifeq ($(shell uname -o), Darwin)
