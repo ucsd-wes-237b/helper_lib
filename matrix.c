@@ -53,7 +53,7 @@ cl_int SaveMatrix(const char *path, Matrix *matrix)
     
     for (int i = 0; i < rows * cols; i++)
     {
-        if (fprintf(data_file, "%f ", matrix->data[i]) < -1)
+        if (fprintf(data_file, "%f ", roundf(matrix->data[i] * 100) / 100) < -1)
             return CL_INVALID_VALUE; // Error parsing dimensions
     }
 
