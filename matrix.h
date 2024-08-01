@@ -14,3 +14,4 @@ typedef struct _Matrix
 cl_int LoadMatrix(const char *path, Matrix *matrix);
 cl_int SaveMatrix(const char *path, Matrix *matrix);
 cl_int CheckMatrix(Matrix *truth, Matrix *student);
+void PrintMatrix(Matrix *matrix);
