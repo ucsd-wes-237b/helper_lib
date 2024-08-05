@@ -77,7 +77,7 @@ cl_int CheckMatrix(Matrix *truth, Matrix *student)
     int count = truth->shape[0] * truth->shape[1];
     for (int i = 0; i < count; i++)
     {
-        if (truth->data[i] != roundf(student->data[i] * 100) / 100)
+        if (truth->data[i] != student->data[i] && truth->data[i] != roundf(student->data[i] * 100) / 100)
         {
             printf("!!SOLUTION IS NOT CORRECT!!\n");
             return CL_INVALID_VALUE;
