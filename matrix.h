@@ -1,3 +1,5 @@
+#pragma once
+
 #ifdef __APPLE__
 #include <OpenCL/cl.h>
 #else

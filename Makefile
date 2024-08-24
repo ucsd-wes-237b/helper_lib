@@ -12,7 +12,7 @@ else # Android
 endif
 LDFLAGS += -lm
 
-SOURCES := device.c kernel.c matrix.c
+SOURCES := device.c kernel.c matrix.c img.c
 OBJECTS = $(SOURCES:.c=.o)
 
 .PHONY: all
