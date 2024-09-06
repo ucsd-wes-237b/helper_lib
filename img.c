@@ -39,7 +39,7 @@ cl_int LoadImg(const char *path, Matrix* img)
 
     ungetc(c, fp);
     //read image size information
-    if (fscanf(fp, "%d %d", &img->shape[0], &img->shape[1]) != 2) {
+    if (fscanf(fp, "%d %d", &img->shape[1], &img->shape[0]) != 2) {
         fprintf(stderr, "Invalid image size (error loading '%s')\n", path);
         return CL_INVALID_VALUE;
     }
@@ -110,7 +110,7 @@ cl_int SaveImg(const char *path, Matrix* img)
     fprintf(fp, "# Created by %s\n", "CSE Helper Lib");
 
     //image size
-    fprintf(fp, "%d %d\n",img->shape[0],img->shape[1]);
+    fprintf(fp, "%d %d\n",img->shape[1],img->shape[0]);
 
     // rgb component depth
     fprintf(fp, "%d\n", RGB_COMPONENT_COLOR);
