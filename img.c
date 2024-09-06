@@ -32,7 +32,7 @@ cl_int LoadImg(const char *path, Matrix* img)
     //check for comments
     c = getc(fp);
     while (c == '#') {
-    while (getc(fp) != '\n') ;
+        while (getc(fp) != '\n') ;
         c = getc(fp);
     }
 
@@ -67,7 +67,7 @@ cl_int LoadImg(const char *path, Matrix* img)
 
     //read pixel data from file
     if (fread(data, IMAGE_CHANNELS * img->shape[0], img->shape[1], fp) != img->shape[1]) {
-        fprintf(stderr, "Error loading image '%s'\n", filename);
+        fprintf(stderr, "Error loading image '%s'\n", path);
         return CL_INVALID_VALUE;
     }
 
