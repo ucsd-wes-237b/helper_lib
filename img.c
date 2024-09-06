@@ -71,7 +71,7 @@ cl_int LoadImg(const char *path, Matrix* img)
         return CL_INVALID_VALUE;
     }
 
-    int count = img->shape[0] * img->shape[1];
+    int count = img->shape[0] * img->shape[1] * 3;
     for (int i = 0; i < count; i++)
     {
         img->data[i] = (float)data[i] / 255.0f;
@@ -83,9 +83,43 @@ cl_int LoadImg(const char *path, Matrix* img)
     return CL_SUCCESS;
 }
 
-cl_int SaveImg(const char *filename, Matrix* img)
+cl_int SaveImg(const char *path, Matrix* img)
 {
-    // Place holder
+    int count = img->shape[0] * img->shape[1] * 3;
+    unsigned char* data = (unsigned char *)malloc(img->shape[0] * img->shape[1] * IMAGE_CHANNELS * sizeof(char));
+
+    for (int i = 0; i < count; i++)
+    {
+        data[i] = img->data[i] * 255.0f;
+    }
+
+    FILE *fp;
+    //open file for output
+    fp = fopen(path, "wb");
+    if (!fp) {
+        fprintf(stderr, "Unable to open file '%s'\n", path);
+        return CL_INVALID_VALUE;
+    }
+
+    //write the header file
+    //image format
+    fprintf(fp, "P6\n");
+
+    //comments
+    fprintf(fp, "# Created by %s\n", "CSE Helper Lib");
+
+    //image size
+    fprintf(fp, "%d %d\n",img->shape[0],img->shape[1]);
+
+    // rgb component depth
+    fprintf(fp, "%d\n", RGB_COMPONENT_COLOR);
+
+    // pixel data
+    fwrite(data, 3 * img->shape[0], img->shape[1], fp);
+    fclose(fp);
+
+    free(data);
+
     return 0;
 }
 
