@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "img.h"
 
@@ -138,7 +139,7 @@ cl_int CheckImg(Matrix *truth, Matrix *student)
         float diff = fabs(truth->data[i] - student->data[i]);
         if (diff > epsilon)
         {
-            printf("!!SOLUTION IS NOT CORRECT!! Expected: %0.2f, Found %0.2f\n", truth->data[i], student->data[i]);
+            printf("!!SOLUTION IS NOT CORRECT!! Expected: %0.2f, Found %0.2f at %d\n", truth->data[i], student->data[i], i);
             return CL_INVALID_VALUE;
         }
     }
