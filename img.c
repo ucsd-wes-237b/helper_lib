@@ -6,7 +6,7 @@
 
 #define RGB_COMPONENT_COLOR 255
 
-cl_int LoadImg(const char *path, Matrix* img)
+cl_int LoadImg(const char *path, Image* img)
 {
     char buff[16];
     FILE *fp;
@@ -59,7 +59,7 @@ cl_int LoadImg(const char *path, Matrix* img)
     while (fgetc(fp) != '\n') ;
     //memory allocation for pixel data
     unsigned char* data = (unsigned char *)malloc(img->shape[0] * img->shape[1] * IMAGE_CHANNELS * sizeof(char));
-    img->data = (float *)malloc(img->shape[0] * img->shape[1] * IMAGE_CHANNELS * sizeof(float));
+    img->data = (int *)malloc(img->shape[0] * img->shape[1] * IMAGE_CHANNELS * sizeof(int));
 
     if (!data || !img->data) {
         fprintf(stderr, "Unable to allocate memory\n");
@@ -75,7 +75,7 @@ cl_int LoadImg(const char *path, Matrix* img)
     int count = img->shape[0] * img->shape[1] * 3;
     for (int i = 0; i < count; i++)
     {
-        img->data[i] = (float)data[i] / 255.0f;
+        img->data[i] = (int)data[i] / 255;
     }
 
     fclose(fp);
@@ -84,14 +84,71 @@ cl_int LoadImg(const char *path, Matrix* img)
     return CL_SUCCESS;
 }
 
-cl_int SaveImg(const char *path, Matrix* img)
+cl_int LoadImgRaw(const char *path, Image* img)
+{
+    FILE *data_file;
+
+    data_file = fopen(path, "r");
+    if (!data_file) {
+        printf("Could not find file.\n");
+        return CL_INVALID_VALUE;
+    } // Error opening file
+
+    unsigned int rows       = 0;
+    unsigned int cols       = 0;
+    unsigned int channels   = 0;
+    
+    if (fscanf(data_file, "# (%u, %u, %u)\n", &rows, &cols, &channels) == EOF) {
+        printf("Could not parse header.\n");
+        return CL_INVALID_VALUE; // Error parsing dimensions
+    }
+
+    if (rows == 0){
+        rows = 1;
+    }
+    if (cols == 0) {
+        cols = 1;
+    }
+    if (channels == 0){
+        channels = 3;
+    }
+
+    img->shape[0] = rows;
+    img->shape[1] = cols;
+    img->shape[2] = channels;
+
+    img->data = malloc(sizeof(int) * rows * cols * channels);
+    if (!img->data){ // Error mallocing matrix data
+        return CL_OUT_OF_HOST_MEMORY;
+    }
+
+    int n = 0;
+    while (fscanf(data_file, "%d", &(img->data[n++])) != EOF);
+
+    fclose(data_file);
+
+    return CL_SUCCESS;
+}
+
+cl_int LoadStride(const char *dir, int *stride) {
+    char path[256];
+    sprintf(path, "%s/stride.raw", dir);
+    FILE *fp = fopen(path, "r");
+    if (!fp) return CL_INVALID_VALUE;
+    fscanf(fp, "%d", stride);
+    fclose(fp);
+    return CL_SUCCESS;
+}
+
+
+cl_int SaveImg(const char *path, Image* img)
 {
     int count = img->shape[0] * img->shape[1] * 3;
     unsigned char* data = (unsigned char *)malloc(img->shape[0] * img->shape[1] * IMAGE_CHANNELS * sizeof(char));
 
     for (int i = 0; i < count; i++)
     {
-        data[i] = img->data[i] * 255.0f;
+        data[i] = img->data[i] * 255;
     }
 
     FILE *fp;
@@ -124,7 +181,7 @@ cl_int SaveImg(const char *path, Matrix* img)
     return 0;
 }
 
-cl_int CheckImg(Matrix *truth, Matrix *student)
+cl_int CheckImg(Image *truth, Image *student)
 {
     if (truth->shape[0] != student->shape[0] || truth->shape[1] != student->shape[1])
     {
@@ -135,11 +192,11 @@ cl_int CheckImg(Matrix *truth, Matrix *student)
     int count = truth->shape[0] * truth->shape[1] * IMAGE_CHANNELS;
     for (int i = 0; i < count; i++)
     {
-        float epsilon = fabs(truth->data[i]) * 0.1f;
-        float diff = fabs(truth->data[i] - student->data[i]);
-        if (diff > epsilon)
+        // float epsilon = fabs(truth->data[i]) * 0.1f;
+        int diff = truth->data[i] - student->data[i];
+        if (diff !=  0)
         {
-            printf("!!SOLUTION IS NOT CORRECT!! Expected: %0.2f, Found %0.2f at %d\n", truth->data[i], student->data[i], i);
+            printf("!!SOLUTION IS NOT CORRECT!! Expected: %d, Found %df at %d\n", truth->data[i], student->data[i], i);
             return CL_INVALID_VALUE;
         }
     }

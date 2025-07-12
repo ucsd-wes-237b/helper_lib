@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -10,6 +14,10 @@
 #else
 #define CL_TARGET_OPENCL_VERSION 300 // Use OpenCL 3.0
 #include <CL/cl.h>
+#endif
+
+#ifndef OCL_DEVICE_TYPE // Allows us to override in the Makefile.
+#define OCL_DEVICE_TYPE CL_DEVICE_TYPE_GPU
 #endif
 
 /**
@@ -47,6 +55,30 @@ typedef struct _OclPlatformProp
     cl_uint num_devices;
     OclDeviceProp *devices;
 } OclPlatformProp;
+
+/**
+ * @brief Finds an OpenCL device matching the specified type.  Falls back to the first returned device if there are no devices of the specified type returned.
+ * This function returns CL_DEVICE_NOT_FOUND if no platforms are found.  Internally, OclFindPlatforms is called.
+ * 
+ * @param device_id A pointer to the block of memory to store the device ID for the specified device type or Fallback device.
+ * @param device_type The type of device to look for.
+ * 
+ * @return CL_SUCCESS if a valid device is found.  An error otherwise.
+ */
+cl_int OclGetDeviceWithFallback(cl_device_id* device_id, cl_device_type device_type);
+
+/**
+ * @brief Finds an OpenCL device matching the specified type.  Falls back to the first returned device if there are no devices of the specified type returned.
+ * This function returns CL_DEVICE_NOT_FOUND if no platforms are found.  Internally, OclFindPlatforms is called.
+ * 
+ * @param device_id A pointer to the block of memory to store the device ID for the specified device type or Fallback device.
+ * @param platform_index A pointer to the block of memory to store the platform index for the specified device type or fallback device.
+ * @param device_index A pointer to the block of memory to store teh device index for the specified device type or fallback device.
+ * @param device_type The type of device to look for.
+ * 
+ * @return CL_SUCCESS if a valid device is found.  An error otherwise.
+ */
+cl_int OclGetDeviceInfoWithFallback(cl_device_id* device_id, int* platform_index, int* device_index, cl_device_type device_type);
 
 /**
  * @brief Finds all OpenCL platforms and devices, and get their respective properties.
@@ -100,3 +132,7 @@ cl_int OclFreePlatformProp(OclPlatformProp *platform);
  * @return CL_SUCCESS if and only if struct is successfully freed.
  */
 cl_int OclFreeDeviceProp(OclDeviceProp *device);
+
+#ifdef __cplusplus
+}
+#endif

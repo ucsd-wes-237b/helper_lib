@@ -19,11 +19,13 @@ OBJECTS = $(SOURCES:.c=.o)
 .SUFFIXES: .o .c
 all: helper_lib.a
 
+debug: CFLAGS += -DOCL_DEVICE_TYPE=CL_DEVICE_TYPE_CPU
+debug: helper_lib.a
+
 .c.o:
 	$(CC) $(CFLAGS) -c -o $@ $^ $(INCFLAGS) $(LDFLAGS)
 
 helper_lib.a: $(OBJECTS)
-	ar rcs -o $@ $(OBJECTS)
-
+	ar rcs $@ $(OBJECTS)
 clean: 
 	rm -r $(OBJECTS) helper_lib.a
